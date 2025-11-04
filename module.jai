@@ -13,7 +13,7 @@ jay_logger :: (message: string, data: *void, info: Log_Info) {
 
     prefix_builder: String_Builder;
     
-    print_to_builder(*prefix_builder, "\u001b\u001b[2m");
+    print_to_builder(*prefix_builder, "\u001b\u001b");
     print_to_builder(*prefix_builder, "[T-%] ", context.thread_index);
     print_to_builder(*prefix_builder, calendar_to_log_string(to_calendar(current_time_consensus())));
     print_to_builder(*prefix_builder, "\x1b[0m ");
@@ -39,13 +39,18 @@ jay_logger :: (message: string, data: *void, info: Log_Info) {
     prefix := builder_to_string(*prefix_builder,, temp);
     suffix := join("\n", prefix,, temp);
     s := trim(message, "\n",, temp);
-    offseted := replace(s, "\n", "\n\t\t\t\t\t",, temp);
-
+    //offseted := replace(s, "\n", "\n                                    ",, temp);
+    offseted := s;
     print_to_builder(*message_builder, prefix);
     print_to_builder(*message_builder, offseted);
     print_to_builder(*message_builder, "\x1b[0m\n");
     write_builder(*message_builder);
 }
+
+log_warning :: (format_string: string, args: .. Any, loc := #caller_location, flags := Log_Flags.NONE, user_flags : u32 = 0, section : *Log_Section = null) {
+    new_flags := flags | .WARNING;
+    log(format_string, ..args, loc, new_flags, user_flags, section);
+} @PrintLike
 
 #scope_file
 
